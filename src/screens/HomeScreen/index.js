@@ -11,7 +11,7 @@ import styles from './styles';
 
 import {Auth, API, graphqlOperation} from 'aws-amplify';
 import {getCar, listOrders} from '../../graphql/queries';
-import {updateCar} from '../../graphql/mutations';
+import {updateCar, updateOrder} from '../../graphql/mutations';
 
 const origin = {latitude: 28.450927, longitude: -16.260847};
 const destination = {latitude: 37.771707, longitude: -122.4053769};
@@ -79,6 +79,14 @@ const HomeScreen = () => {
   };
 
   const onAccept = newOrder => {
+    try {
+      const input = {
+        id: newOrder.id,
+        status: 'PICKING_UP_CLIENT',
+        carId: car.id,
+      };
+    } catch (error) {}
+
     setOrder(newOrder);
     setNewOrders(newOrders.slice(1) || []);
   };
@@ -163,6 +171,7 @@ const HomeScreen = () => {
   const onUserLocationChange = async event => {
     // setMyPosition(event.nativeEvent.coordinate);
     const {latitude, longitude, heading} = event.nativeEvent.coordinate;
+    console.warn('Position', event.nativeEvent.coordinate);
     // update the car, update the location
 
     try {
@@ -185,7 +194,7 @@ const HomeScreen = () => {
   };
 
   const onDirectionFound = event => {
-    console.warn('Direction found', event);
+    // console.warn('Direction found', event);
     if (order) {
       setOrder({
         ...order,
